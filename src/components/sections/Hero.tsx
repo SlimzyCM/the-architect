@@ -1,7 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, lazy, Suspense } from 'react';
 import { motion } from 'framer-motion';
+import { useTheme } from '@/context/ThemeContext';
+import { useVisitorFingerprint } from '@/hooks/useVisitorFingerprint';
+import { themes } from '@/lib/themes';
+
+// Lazy load the 3D scene (heavy — only load on client)
+const HeroScene = lazy(() => import('@/components/three/HeroScene'));
 
 const roles = [
   'Senior Software Engineer',
@@ -15,8 +21,21 @@ export default function Hero() {
   const [roleIndex, setRoleIndex] = useState(0);
   const [displayText, setDisplayText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showScene, setShowScene] = useState(false);
+  const { theme } = useTheme();
+  const seed = useVisitorFingerprint();
 
-  // Typewriter effect for roles
+  const currentTheme = themes[theme];
+  const accentColor = currentTheme.colors['--accent'];
+  const secondaryColor = currentTheme.colors['--accent-secondary'];
+
+  // Delay 3D scene mount for smoother initial load
+  useEffect(() => {
+    const timer = setTimeout(() => setShowScene(true), 500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Typewriter effect
   useEffect(() => {
     const currentRole = roles[roleIndex];
     let timeout: NodeJS.Timeout;
@@ -67,38 +86,25 @@ export default function Hero() {
       className="relative min-h-screen flex items-center justify-center overflow-hidden"
       style={{ background: 'var(--hero-gradient)' }}
     >
-      {/* Animated Background Grid */}
-      <div
-        className="absolute inset-0 opacity-[0.04]"
-        style={{
-          backgroundImage: `
-            linear-gradient(var(--accent) 1px, transparent 1px),
-            linear-gradient(90deg, var(--accent) 1px, transparent 1px)
-          `,
-          backgroundSize: '60px 60px',
-        }}
-      />
+      {/* 3D Scene Background */}
+      {showScene && (
+        <Suspense fallback={null}>
+          <div className="absolute inset-0 z-0">
+            <HeroScene
+              seed={seed}
+              accentColor={accentColor}
+              secondaryColor={secondaryColor}
+            />
+          </div>
+        </Suspense>
+      )}
 
-      {/* Floating Gradient Orbs */}
-      <motion.div
-        className="absolute w-[500px] h-[500px] rounded-full blur-[120px] opacity-20"
-        style={{ background: 'var(--accent)', top: '10%', left: '10%' }}
-        animate={{
-          x: [0, 50, 0],
-          y: [0, 30, 0],
-          scale: [1, 1.1, 1],
+      {/* Gradient overlay for text readability */}
+      <div
+        className="absolute inset-0 z-[1]"
+        style={{
+          background: `radial-gradient(ellipse at center, transparent 30%, var(--bg-primary) 80%)`,
         }}
-        transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
-      />
-      <motion.div
-        className="absolute w-[400px] h-[400px] rounded-full blur-[100px] opacity-15"
-        style={{ background: 'var(--accent-secondary)', bottom: '10%', right: '10%' }}
-        animate={{
-          x: [0, -40, 0],
-          y: [0, -30, 0],
-          scale: [1, 1.15, 1],
-        }}
-        transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
       />
 
       {/* Content */}
@@ -108,6 +114,24 @@ export default function Hero() {
         initial="hidden"
         animate="visible"
       >
+        {/* Unique visitor badge */}
+        <motion.div
+          variants={itemVariants}
+          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-8 text-xs font-medium tracking-wide"
+          style={{
+            background: 'var(--bg-card)',
+            border: '1px solid var(--border)',
+            color: 'var(--text-muted)',
+            backdropFilter: 'blur(10px)',
+          }}
+        >
+          <span
+            className="w-2 h-2 rounded-full animate-pulse"
+            style={{ background: 'var(--accent)' }}
+          />
+          This scene was uniquely generated for you
+        </motion.div>
+
         {/* Greeting */}
         <motion.p
           variants={itemVariants}
@@ -207,13 +231,16 @@ export default function Hero() {
             transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
             className="flex flex-col items-center gap-2"
           >
-            <span className="text-xs tracking-widest uppercase" style={{ color: 'var(--text-muted)' }}>
+            <span
+              className="text-xs tracking-widest uppercase"
+              style={{ color: 'var(--text-muted)' }}
+            >
               Scroll
             </span>
             <div
               className="w-[1px] h-8"
               style={{
-                background: `linear-gradient(to bottom, var(--accent), transparent)`,
+                background: 'linear-gradient(to bottom, var(--accent), transparent)',
               }}
             />
           </motion.div>
