@@ -3,6 +3,10 @@ import { ThemeProvider } from '@/context/ThemeContext';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import ThemeSwitcher from '@/components/ui/ThemeSwitcher';
+import Terminal from '@/components/interactive/Terminal';
+import VoiceNav from '@/components/interactive/VoiceNav';
+import AIChatbot from '@/components/interactive/AIChatbot';
+import CodePlayground from '@/components/interactive/CodePlayground';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -40,7 +44,12 @@ export default function RootLayout({
           <Navbar />
           <main>{children}</main>
           <Footer />
+          {/* Interactive Features */}
           <ThemeSwitcher />
+          <Terminal />
+          <VoiceNav />
+          <AIChatbot />
+          <CodePlayground />
         </ThemeProvider>
       </body>
     </html>
