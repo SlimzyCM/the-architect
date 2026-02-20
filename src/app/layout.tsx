@@ -10,7 +10,7 @@ import CodePlayground from '@/components/interactive/CodePlayground';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Chidi Michael Okobia | Senior Software Engineer',
+  title: 'Chidi Okobia — Senior Software Engineer',
   description:
     'Engineering systems that scale. Building products that matter. Senior Full-Stack Engineer specializing in .NET, React, Cloud Architecture, and Microservices.',
   keywords: [
@@ -19,14 +19,13 @@ export const metadata: Metadata = {
     '.NET',
     'React',
     'AWS',
-    'Azure',
     'Microservices',
     'Cloud Architecture',
     'Chidi Okobia',
   ],
   authors: [{ name: 'Chidi Michael Okobia' }],
   openGraph: {
-    title: 'Chidi Michael Okobia | Senior Software Engineer',
+    title: 'Chidi Okobia — Senior Software Engineer',
     description: 'Engineering systems that scale. Building products that matter.',
     type: 'website',
   },
@@ -39,12 +38,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="antialiased noise-overlay" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+      <body className="antialiased noise-overlay">
         <ThemeProvider>
           <Navbar />
           <main>{children}</main>
           <Footer />
-          {/* Interactive Features */}
           <ThemeSwitcher />
           <Terminal />
           <VoiceNav />

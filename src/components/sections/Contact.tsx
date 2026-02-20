@@ -5,186 +5,154 @@ import { useRef, useState } from 'react';
 
 export default function Contact() {
   const sectionRef = useRef(null);
-  const isInView = useInView(sectionRef, { once: true, amount: 0.2 });
+  const isInView = useInView(sectionRef, { once: true, amount: 0.15 });
   const [formState, setFormState] = useState({ name: '', email: '', message: '' });
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus('sending');
-    // Simulate sending — replace with real API route later
     await new Promise((r) => setTimeout(r, 1500));
     setStatus('sent');
     setFormState({ name: '', email: '', message: '' });
     setTimeout(() => setStatus('idle'), 4000);
   };
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' as const } },
-  };
-
   return (
     <section
       id="contact"
       ref={sectionRef}
-      className="section-padding relative overflow-hidden"
+      className="section-padding relative"
       style={{ background: 'var(--bg-secondary)' }}
     >
-      <div
-        className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full blur-[180px] opacity-[0.06]"
-        style={{ background: 'var(--accent)' }}
-      />
-
-      <motion.div
-        className="max-w-5xl mx-auto"
-        initial="hidden"
-        animate={isInView ? 'visible' : 'hidden'}
-        variants={{ visible: { transition: { staggerChildren: 0.1 } } }}
-      >
-        {/* Header */}
-        <motion.div variants={itemVariants} className="mb-12">
-          <p className="text-sm font-medium tracking-widest uppercase mb-3" style={{ color: 'var(--accent)' }}>
-            Get In Touch
+      <div className="max-w-5xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8 }}
+          className="mb-20"
+        >
+          <p className="text-[11px] font-medium tracking-[0.2em] uppercase mb-5" style={{ color: 'var(--text-muted)' }}>
+            Contact
           </p>
-          <h2 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
-            Let&apos;s Build{' '}
-            <span className="gradient-text">Together</span>
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>
+            Let&apos;s Talk
           </h2>
-          <p className="text-lg max-w-2xl" style={{ color: 'var(--text-muted)' }}>
-            Whether you have a project in mind, want to discuss opportunities, or just want to connect — I&apos;d love to hear from you.
+          <p className="text-lg max-w-xl" style={{ color: 'var(--text-secondary)', lineHeight: '1.7' }}>
+            Open to discussing opportunities, projects, or just connecting.
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-5 gap-10">
-          {/* Form — 3 columns */}
+        <div className="grid md:grid-cols-12 gap-12 md:gap-16">
+          {/* Form */}
           <motion.form
-            variants={itemVariants}
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ delay: 0.2, duration: 0.8 }}
             onSubmit={handleSubmit}
-            className="md:col-span-3 space-y-5"
+            className="md:col-span-7 space-y-6"
           >
-            <div className="grid sm:grid-cols-2 gap-5">
-              <div>
-                <label className="block text-xs font-medium tracking-wider uppercase mb-2" style={{ color: 'var(--text-muted)' }}>
-                  Name
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={formState.name}
-                  onChange={(e) => setFormState({ ...formState, name: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all duration-300"
-                  style={{
-                    background: 'var(--bg-card)',
-                    border: '1px solid var(--border)',
-                    color: 'var(--text-primary)',
-                  }}
-                  placeholder="Your name"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-medium tracking-wider uppercase mb-2" style={{ color: 'var(--text-muted)' }}>
-                  Email
-                </label>
-                <input
-                  type="email"
-                  required
-                  value={formState.email}
-                  onChange={(e) => setFormState({ ...formState, email: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all duration-300"
-                  style={{
-                    background: 'var(--bg-card)',
-                    border: '1px solid var(--border)',
-                    color: 'var(--text-primary)',
-                  }}
-                  placeholder="your@email.com"
-                />
-              </div>
+            <div className="grid sm:grid-cols-2 gap-6">
+              {['name', 'email'].map((field) => (
+                <div key={field}>
+                  <label className="block text-[11px] font-medium tracking-[0.15em] uppercase mb-3" style={{ color: 'var(--text-muted)' }}>
+                    {field}
+                  </label>
+                  <input
+                    type={field === 'email' ? 'email' : 'text'}
+                    required
+                    value={formState[field as keyof typeof formState]}
+                    onChange={(e) => setFormState({ ...formState, [field]: e.target.value })}
+                    className="w-full px-0 py-3 text-[15px] bg-transparent outline-none transition-all duration-300"
+                    style={{
+                      borderBottom: '1px solid var(--border)',
+                      color: 'var(--text-primary)',
+                    }}
+                    placeholder={field === 'email' ? 'your@email.com' : 'Your name'}
+                  />
+                </div>
+              ))}
             </div>
-
             <div>
-              <label className="block text-xs font-medium tracking-wider uppercase mb-2" style={{ color: 'var(--text-muted)' }}>
+              <label className="block text-[11px] font-medium tracking-[0.15em] uppercase mb-3" style={{ color: 'var(--text-muted)' }}>
                 Message
               </label>
               <textarea
                 required
-                rows={6}
+                rows={5}
                 value={formState.message}
                 onChange={(e) => setFormState({ ...formState, message: e.target.value })}
-                className="w-full px-4 py-3 rounded-xl text-sm outline-none resize-none transition-all duration-300"
+                className="w-full px-0 py-3 text-[15px] bg-transparent outline-none resize-none transition-all duration-300"
                 style={{
-                  background: 'var(--bg-card)',
-                  border: '1px solid var(--border)',
+                  borderBottom: '1px solid var(--border)',
                   color: 'var(--text-primary)',
                 }}
                 placeholder="Tell me about your project..."
               />
             </div>
-
             <motion.button
               type="submit"
               disabled={status === 'sending'}
-              className="px-8 py-3.5 rounded-xl text-base font-semibold transition-all duration-300 disabled:opacity-50"
+              className="mt-4 px-8 py-3.5 rounded-full text-[14px] font-medium transition-all duration-300 disabled:opacity-50"
               style={{
-                background: status === 'sent' ? '#22c55e' : 'var(--accent)',
-                color: 'var(--bg-primary)',
+                border: '1px solid var(--border-hover)',
+                color: status === 'sent' ? 'var(--highlight)' : 'var(--text-primary)',
+                background: 'transparent',
               }}
-              whileHover={{ scale: 1.03, boxShadow: '0 0 25px var(--accent-glow)' }}
-              whileTap={{ scale: 0.97 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
             >
-              {status === 'idle' && 'Send Message'}
+              {status === 'idle' && 'Send Message →'}
               {status === 'sending' && 'Sending...'}
-              {status === 'sent' && '✓ Message Sent!'}
+              {status === 'sent' && 'Sent ✓'}
               {status === 'error' && 'Try Again'}
             </motion.button>
           </motion.form>
 
-          {/* Contact Info — 2 columns */}
-          <motion.div variants={itemVariants} className="md:col-span-2 space-y-5">
-            {[
-              { label: 'Email', value: 'chidimicheal17@gmail.com', href: 'mailto:chidimicheal17@gmail.com', icon: '✉️' },
-              { label: 'Phone', value: '+1-437-556-0303', href: 'tel:+14375560303', icon: '📱' },
-              { label: 'LinkedIn', value: 'linkedin.com/in/slimzycm', href: 'https://linkedin.com/in/slimzycm', icon: '💼' },
-              { label: 'GitHub', value: 'github.com/SlimzyCM', href: 'https://github.com/SlimzyCM', icon: '🐙' },
-              { label: 'Location', value: 'Ajax, Ontario, Canada', href: undefined, icon: '📍' },
-            ].map((item) => (
-              <motion.div
-                key={item.label}
-                className="p-4 rounded-xl theme-transition"
-                style={{
-                  background: 'var(--bg-card)',
-                  border: '1px solid var(--border)',
-                }}
-                whileHover={{ x: 4, borderColor: 'var(--border-hover)' }}
-              >
-                <div className="flex items-center gap-3">
-                  <span className="text-lg">{item.icon}</span>
-                  <div>
-                    <p className="text-xs font-medium tracking-wider uppercase" style={{ color: 'var(--text-muted)' }}>
-                      {item.label}
+          {/* Contact Info */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ delay: 0.4, duration: 0.8 }}
+            className="md:col-span-5"
+          >
+            <div className="space-y-0">
+              {[
+                { label: 'Email', value: 'chidimicheal17@gmail.com', href: 'mailto:chidimicheal17@gmail.com' },
+                { label: 'Phone', value: '+1-437-556-0303', href: 'tel:+14375560303' },
+                { label: 'LinkedIn', value: 'linkedin.com/in/slimzycm', href: 'https://linkedin.com/in/slimzycm' },
+                { label: 'GitHub', value: 'github.com/SlimzyCM', href: 'https://github.com/SlimzyCM' },
+                { label: 'Location', value: 'Ajax, Ontario, Canada', href: undefined },
+              ].map((item) => (
+                <div
+                  key={item.label}
+                  className="py-5"
+                  style={{ borderBottom: '1px solid var(--border)' }}
+                >
+                  <p className="text-[11px] font-medium tracking-[0.15em] uppercase mb-2" style={{ color: 'var(--text-muted)' }}>
+                    {item.label}
+                  </p>
+                  {item.href ? (
+                    <a
+                      href={item.href}
+                      target={item.href.startsWith('http') ? '_blank' : undefined}
+                      rel="noopener noreferrer"
+                      className="text-[15px] font-medium transition-all duration-300 hover:opacity-70"
+                      style={{ color: 'var(--text-primary)' }}
+                    >
+                      {item.value}
+                    </a>
+                  ) : (
+                    <p className="text-[15px] font-medium" style={{ color: 'var(--text-primary)' }}>
+                      {item.value}
                     </p>
-                    {item.href ? (
-                      <a
-                        href={item.href}
-                        target={item.href.startsWith('http') ? '_blank' : undefined}
-                        rel="noopener noreferrer"
-                        className="text-sm font-medium hover:underline"
-                        style={{ color: 'var(--accent)' }}
-                      >
-                        {item.value}
-                      </a>
-                    ) : (
-                      <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
-                        {item.value}
-                      </p>
-                    )}
-                  </div>
+                  )}
                 </div>
-              </motion.div>
-            ))}
+              ))}
+            </div>
           </motion.div>
         </div>
-      </motion.div>
+      </div>
     </section>
   );
 }
